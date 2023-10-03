@@ -4,17 +4,17 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "mental_exercise")
-public class MentalExercise {
+public class MentalExerciseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String exercise;
     private String description;
 
-    public MentalExercise() {
+    public MentalExerciseEntity() {
     }
 
-    public MentalExercise(Integer id, String exercise, String description) {
+    public MentalExerciseEntity(Integer id, String exercise, String description) {
         this.id = id;
         this.exercise = exercise;
         this.description = description;
