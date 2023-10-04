@@ -2,10 +2,13 @@ package com.mid.mentalhealthmicroservice.service;
 
 import com.mid.mentalhealthmicroservice.dto.CategoryBasedExerciseDTO;
 import com.mid.mentalhealthmicroservice.dto.MentalExerciseDTO;
+import com.mid.mentalhealthmicroservice.dto.MentalHealthRecommendationDTO;
 import com.mid.mentalhealthmicroservice.dto.QuestionsDTO;
 import com.mid.mentalhealthmicroservice.entity.CategoryBasedExerciseEntity;
 import com.mid.mentalhealthmicroservice.entity.MentalExerciseEntity;
 import com.mid.mentalhealthmicroservice.entity.UserInformationEntity;
+import com.mid.mentalhealthmicroservice.exception.ExerciseNotFound;
+import com.mid.mentalhealthmicroservice.exception.UserNotFound;
 import com.mid.mentalhealthmicroservice.repository.CategoryBasedExerciseRepository;
 import com.mid.mentalhealthmicroservice.repository.MentalExerciseRepository;
 import com.mid.mentalhealthmicroservice.repository.UserInformationRepository;
@@ -14,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MentalHealthService {
@@ -35,52 +40,86 @@ public class MentalHealthService {
         for(MentalExerciseEntity mentalExerciseEntity:mentalExerciseRepository.findAll()){
             mentalExerciseDTOList.add(new ModelMapper().map(mentalExerciseEntity,MentalExerciseDTO.class));
         }
-        return mentalExerciseDTOList.stream().sorted().toList();
+        return mentalExerciseDTOList.stream()
+                .sorted(Comparator.comparing(MentalExerciseDTO::getExercise))
+                .collect(Collectors.toList());
     }
-    public MentalExerciseDTO getMentalExercise(String exercise){
-        return new ModelMapper().map(mentalExerciseRepository.findByExercise(exercise).orElseThrow(() -> new NullPointerException()),MentalExerciseDTO.class);
-    }
-    public CategoryBasedExerciseEntity getUserBasedMentalExercise(Integer userId){
-        if(userInformationRepository.existsById(userId)) {
-            CategoryBasedExerciseEntity categoryBasedExerciseEntity=categoryBasedExerciseRepository.findByCategory(userInformationRepository.findById(userId).orElseThrow(() -> new NullPointerException()).getMentalHealthCategory()).orElseThrow(() -> new NullPointerException());
-            return  categoryBasedExerciseEntity;
+    public MentalExerciseDTO getMentalExercise (String exercise) throws ExerciseNotFound {
+        if(mentalExerciseRepository.existsByExercise(exercise)){
+            return new ModelMapper().map(mentalExerciseRepository.findByExercise(exercise).orElseThrow(() -> new NullPointerException("No exercise")),MentalExerciseDTO.class);
         }
-        return null;
+        throw new ExerciseNotFound();
+    }
+    public CategoryBasedExerciseDTO getUserBasedMentalExercise(Integer userId) throws UserNotFound{
+        if(userInformationRepository.existsByUserId(userId)) {
+            CategoryBasedExerciseEntity categoryBasedExerciseEntity=categoryBasedExerciseRepository.findByCategory(userInformationRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException()).getMentalHealthCategory()).orElseThrow(() -> new NullPointerException());
+            CategoryBasedExerciseDTO categoryBasedExerciseDTO=new ModelMapper().map(categoryBasedExerciseEntity,CategoryBasedExerciseDTO.class);
+
+            List<MentalExerciseDTO> mentalExerciseDTOList=new ArrayList<>();
+            for(MentalExerciseEntity mentalExerciseEntity:categoryBasedExerciseEntity.getMentalExerciseEntities()){
+                mentalExerciseDTOList.add(new ModelMapper().map(mentalExerciseEntity,MentalExerciseDTO.class));
+            }
+            categoryBasedExerciseDTO.setExercises(mentalExerciseDTOList);
+            return categoryBasedExerciseDTO;
+        }
+        throw new UserNotFound();
+    }
+    public MentalHealthRecommendationDTO getUserBasedRecommendation(Integer userId) throws UserNotFound {
+        if(userInformationRepository.existsByUserId(userId)) {
+            CategoryBasedExerciseEntity categoryBasedExerciseEntity=categoryBasedExerciseRepository.findByCategory(userInformationRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException()).getMentalHealthCategory()).orElseThrow(() -> new NullPointerException());
+            MentalHealthRecommendationDTO mentalHealthRecommendationDTO=new ModelMapper().map(categoryBasedExerciseEntity,MentalHealthRecommendationDTO.class);
+            return mentalHealthRecommendationDTO;
+        }
+        throw new UserNotFound();
     }
 
     public Boolean findMentalHealth(QuestionsDTO questionsDTO,Integer userId){
-        if(userInformationRepository.existsById(userId)){
-            UserInformationEntity userInformationEntity=userInformationRepository.findById(userId).orElseThrow(() -> new NullPointerException());
+        if(userInformationRepository.existsByUserId(userId)){
+            return false;
+        }
+        else{
+            //*******Check if exists in user-profile-service
+            //*******If exists then proceed with next parts otherwise print, the user doesn't exist
+            UserInformationEntity userInformationEntity=new UserInformationEntity();
+            userInformationEntity.setUserId(userId);
 
             if(questionsDTO.getSleep()==0 && questionsDTO.getStress()==0 && questionsDTO.getAnxiety()==0){
                 userInformationEntity.setMentalHealthCategory("Normal");
+                userInformationRepository.save(userInformationEntity);
             }
             else if (questionsDTO.getSleep()==0 && questionsDTO.getStress()==0 && questionsDTO.getAnxiety()==1) {
                 userInformationEntity.setMentalHealthCategory("Anxious");
+                userInformationRepository.save(userInformationEntity);
             }
             else if (questionsDTO.getSleep()==0 && questionsDTO.getStress()==1 && questionsDTO.getAnxiety()==0) {
                 userInformationEntity.setMentalHealthCategory("Stressed");
+                userInformationRepository.save(userInformationEntity);
             }
             else if (questionsDTO.getSleep()==1 && questionsDTO.getStress()==0 && questionsDTO.getAnxiety()==0) {
                 userInformationEntity.setMentalHealthCategory("Insomniac");
+                userInformationRepository.save(userInformationEntity);
             }
             else if (questionsDTO.getSleep()==0 && questionsDTO.getStress()==1 && questionsDTO.getAnxiety()==1) {
                 userInformationEntity.setMentalHealthCategory("Turbulent");
+                userInformationRepository.save(userInformationEntity);
             }
             else if (questionsDTO.getSleep()==1 && questionsDTO.getStress()==1 && questionsDTO.getAnxiety()==0) {
                 userInformationEntity.setMentalHealthCategory("Stressinsomnia");
+                userInformationRepository.save(userInformationEntity);
             }
 
             else if (questionsDTO.getSleep()==1 && questionsDTO.getStress()==0 && questionsDTO.getAnxiety()==1) {
                 userInformationEntity.setMentalHealthCategory("Anxiosomnia");
+                userInformationRepository.save(userInformationEntity);
             }
 
             else if (questionsDTO.getSleep()==1 && questionsDTO.getStress()==1 && questionsDTO.getAnxiety()==1) {
                 userInformationEntity.setMentalHealthCategory("Severe");
+                userInformationRepository.save(userInformationEntity);
             }
             return true;
         }
-        return false;
+
     }
 
     public void populateCategory(){

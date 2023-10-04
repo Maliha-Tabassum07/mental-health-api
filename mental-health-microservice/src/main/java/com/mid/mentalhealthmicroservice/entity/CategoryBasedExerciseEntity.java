@@ -13,7 +13,7 @@ public class CategoryBasedExerciseEntity {
     private String category;
     private String duration;
     private String recommendation;
-    @OneToMany
+    @ManyToMany
     private List<MentalExerciseEntity> mentalExerciseEntities;
     public CategoryBasedExerciseEntity() {
     }

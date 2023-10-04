@@ -3,24 +3,16 @@ package com.mid.mentalhealthmicroservice.dto;
 import java.util.List;
 
 public class CategoryBasedExerciseDTO {
-    private String category;
     private String duration;
-    private List<String> exercise;
+    private List<MentalExerciseDTO> exercises;
     public CategoryBasedExerciseDTO() {
     }
 
-    public CategoryBasedExerciseDTO(String category, String duration, String Recommendation,List<String> exercise) {
-        this.category = category;
+    public CategoryBasedExerciseDTO(String duration, List<MentalExerciseDTO> exercises) {
         this.duration = duration;
+        this.exercises = exercises;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 
     public String getDuration() {
         return duration;
@@ -30,11 +22,11 @@ public class CategoryBasedExerciseDTO {
         this.duration = duration;
     }
 
-    public List<String> getExercise() {
-        return exercise;
+    public List<MentalExerciseDTO> getExercises() {
+        return exercises;
     }
 
-    public void setExercise(List<String> exercise) {
-        this.exercise = exercise;
+    public void setExercises(List<MentalExerciseDTO> exercises) {
+        this.exercises = exercises;
     }
 }

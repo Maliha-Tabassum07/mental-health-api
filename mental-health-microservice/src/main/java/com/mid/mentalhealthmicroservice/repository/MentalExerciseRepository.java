@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface MentalExerciseRepository extends JpaRepository<MentalExerciseEntity,Integer> {
     Optional<MentalExerciseEntity> findByExercise(String exercise);
+    Boolean existsByExercise(String exercise);
 }
