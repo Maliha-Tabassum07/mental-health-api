@@ -1,0 +1,30 @@
+package com.moin.UserProfile.exceptions;
+
+import com.moin.UserProfile.payload.ApiResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse> handlerResourceNotFoundException(ResourceNotFoundException ex) {
+        String message = ex.getMessage();
+        ApiResponse response = ApiResponse.builder().message(message).success(true).status(HttpStatus.NOT_FOUND).build();
+        return new ResponseEntity<ApiResponse>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse> handlerEmailAlreadyExistsException(EmailAlreadyExistsException ex){
+        String message = ex.getMessage();
+        ApiResponse response = ApiResponse.builder().message(message).success(false).status(HttpStatus.CONFLICT).build();
+        return new ResponseEntity<ApiResponse>(response,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<String> handleCustomException(CustomException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}

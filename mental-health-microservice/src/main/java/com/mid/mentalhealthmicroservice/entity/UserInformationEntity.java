@@ -10,12 +10,12 @@ public class UserInformationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer userId;
+    private String userId;
     private String mentalHealthCategory;
     public UserInformationEntity() {
     }
 
-    public UserInformationEntity(Integer id, Integer userId, String mood, String mentalHealthCategory, LocalDate currentDate) {
+    public UserInformationEntity(Integer id, String userId, String mood, String mentalHealthCategory, LocalDate currentDate) {
         this.id = id;
         this.userId = userId;
         this.mentalHealthCategory = mentalHealthCategory;
@@ -29,11 +29,11 @@ public class UserInformationEntity {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
     public String getMentalHealthCategory() {

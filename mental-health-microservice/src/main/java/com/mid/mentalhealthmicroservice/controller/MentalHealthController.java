@@ -16,16 +16,6 @@ public class MentalHealthController {
     @Autowired
     MentalHealthService mentalHealthService;
 
-    @GetMapping("/populate/exercise")
-    public ResponseEntity<?> populateExercise( ){
-        mentalHealthService.populateExercise();
-        return new ResponseEntity<>("Database populated",HttpStatus.ACCEPTED);
-    }
-    @GetMapping("/populate/category")
-    public ResponseEntity<?> populateCategory(){
-        mentalHealthService.populateCategory();
-        return new ResponseEntity<>("Database populated",HttpStatus.ACCEPTED);
-    }
     @PostMapping("exercise/create")
     public ResponseEntity<?> createExercise(@RequestBody MentalExerciseDTO mentalExerciseDTO){
         return new ResponseEntity<>(mentalHealthService.createMentalExercise(mentalExerciseDTO),HttpStatus.CREATED);
@@ -41,7 +31,7 @@ public class MentalHealthController {
     }
 
     @PostMapping("survey/{userId}")
-    public ResponseEntity<?> questions(@RequestBody QuestionsDTO questionsDTO, @PathVariable Integer userId){
+    public ResponseEntity<?> questions(@RequestBody QuestionsDTO questionsDTO, @PathVariable String userId){
         if (mentalHealthService.findMentalHealth(questionsDTO,userId)){
             return new ResponseEntity<>("Thank you",HttpStatus.ACCEPTED );
         }
@@ -49,13 +39,18 @@ public class MentalHealthController {
     }
 
     @GetMapping("/exercises/{userId}")
-    public ResponseEntity<?> userBasedExercise(@PathVariable Integer userId ) throws UserNotFound{
+    public ResponseEntity<?> userBasedExercise(@PathVariable String userId ) throws UserNotFound{
         return new ResponseEntity<>(mentalHealthService.getUserBasedMentalExercise(userId),HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/recommendations/{userId}")
-    public ResponseEntity<?> userBasedRecommendation(@PathVariable Integer userId ) throws UserNotFound {
+    public ResponseEntity<?> userBasedRecommendation(@PathVariable String userId ) throws UserNotFound {
         return new ResponseEntity<>(mentalHealthService.getUserBasedRecommendation(userId),HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/email")
+    public ResponseEntity<?> email(){
+        return new ResponseEntity<>(mentalHealthService.getCurrentUser(),HttpStatus.OK);
     }
 
 }

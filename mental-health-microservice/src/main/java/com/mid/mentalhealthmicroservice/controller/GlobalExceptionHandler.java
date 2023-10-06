@@ -25,4 +25,5 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new UserNotFound().getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+
 }
