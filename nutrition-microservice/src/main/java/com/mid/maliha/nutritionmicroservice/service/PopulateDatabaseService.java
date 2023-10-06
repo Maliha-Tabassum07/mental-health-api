@@ -1,16 +1,24 @@
 package com.mid.maliha.nutritionmicroservice.service;
 
+import com.mid.maliha.nutritionmicroservice.entity.CategoryBasedNutritionEntity;
 import com.mid.maliha.nutritionmicroservice.entity.FoodInformationEntity;
+import com.mid.maliha.nutritionmicroservice.repository.CategoryNutritionRepository;
 import com.mid.maliha.nutritionmicroservice.repository.FoodInformationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PopulateDatabaseService {
     @Autowired
     FoodInformationRepository foodInformationRepository;
 
-    public void populateNutrition(){
+    @Autowired
+    CategoryNutritionRepository categoryNutritionRepository;
+
+    public void populateFood(){
 
         FoodInformationEntity foodInformationEntity1=new FoodInformationEntity();
         foodInformationEntity1.setFood("Bread");
@@ -131,6 +139,79 @@ public class PopulateDatabaseService {
         foodInformationEntity15.setCaloriePerServing(100);
         foodInformationEntity15.setServing("1 piece");
         foodInformationRepository.save(foodInformationEntity15);
+
+    }
+
+    public void populateNutrition(){
+
+        List<FoodInformationEntity> foodInformationEntityList=new ArrayList<>();
+        CategoryBasedNutritionEntity categoryBasedNutritionEntity=new CategoryBasedNutritionEntity();
+        categoryBasedNutritionEntity.setCategory("Bread");
+        categoryBasedNutritionEntity.setRecommendation("");
+        foodInformationEntityList.add(foodInformationRepository.findById(1).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(2).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(3).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(4).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(5).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(6).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(7).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(8).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(9).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(10).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(11).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(12).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(13).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(14).get());
+        foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryNutritionRepository.save(categoryBasedNutritionEntity);
+
+        FoodInformationEntity foodInformationEntity2=new FoodInformationEntity();
+        foodInformationEntity2.setFood("Rice");
+        foodInformationEntity2.setRecipe("Boiled rice");
+        foodInformationEntity2.setNutritionalFact("Contains Carbohydrate");
+        foodInformationEntity2.setCaloriePerServing(210);
+        foodInformationEntity2.setServing("1 cup");
+        foodInformationRepository.save(foodInformationEntity2);
+
+        FoodInformationEntity foodInformationEntity3=new FoodInformationEntity();
+        foodInformationEntity3.setFood("Egg(Omelet)");
+        foodInformationEntity3.setRecipe("Egg fried in oil");
+        foodInformationEntity3.setNutritionalFact("High content of protein and fat. Contains vitamins and minerals");
+        foodInformationEntity3.setCaloriePerServing(150);
+        foodInformationEntity3.setServing("1 piece");
+        foodInformationRepository.save(foodInformationEntity3);
+
+        FoodInformationEntity foodInformationEntity4=new FoodInformationEntity();
+        foodInformationEntity4.setFood("Egg(Boiled)");
+        foodInformationEntity4.setRecipe("Boiled in water");
+        foodInformationEntity4.setNutritionalFact("High content of protein and fat. Contains vitamins and minerals");
+        foodInformationEntity4.setCaloriePerServing(68);
+        foodInformationEntity4.setServing("1 piece");
+        foodInformationRepository.save(foodInformationEntity4);
+
+        FoodInformationEntity foodInformationEntity5=new FoodInformationEntity();
+        foodInformationEntity5.setFood("Vegetable curry");
+        foodInformationEntity5.setRecipe("Take seasonal vegetables and cook them with spices");
+        foodInformationEntity5.setNutritionalFact("Rich in vitamins and minerals");
+        foodInformationEntity5.setCaloriePerServing(180);
+        foodInformationEntity5.setServing("1 cup");
+        foodInformationRepository.save(foodInformationEntity5);
+
+        FoodInformationEntity foodInformationEntity6=new FoodInformationEntity();
+        foodInformationEntity6.setFood("Chicken Fry");
+        foodInformationEntity6.setRecipe("Coat the chicken in batter using spices. Then fry them in oil");
+        foodInformationEntity6.setNutritionalFact("High content of fat and protein. Have no dietary fiber");
+        foodInformationEntity6.setCaloriePerServing(200);
+        foodInformationEntity6.setServing("1 piece");
+        foodInformationRepository.save(foodInformationEntity6);
+
+        FoodInformationEntity foodInformationEntity7=new FoodInformationEntity();
+        foodInformationEntity7.setFood("Chicken Curry");
+        foodInformationEntity7.setRecipe("Cook the chicken in spices. ");
+        foodInformationEntity7.setNutritionalFact("High content of protein.");
+        foodInformationEntity7.setCaloriePerServing(150);
+        foodInformationEntity7.setServing("1 piece");
+        foodInformationRepository.save(foodInformationEntity7);
 
     }
 }

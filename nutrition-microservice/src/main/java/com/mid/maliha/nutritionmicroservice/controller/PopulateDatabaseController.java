@@ -17,7 +17,7 @@ public class PopulateDatabaseController {
 
     @GetMapping("/food-information")
     public ResponseEntity<?> populateFood( ){
-        populateDatabaseService.populateNutrition();
+        populateDatabaseService.populateFood();
         return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);
     }
 }
