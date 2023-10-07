@@ -13,11 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/populate")
 public class PopulateDatabaseController {
     @Autowired
-    PopulateDatabaseService populateDatabaseService;
+    private PopulateDatabaseService populateDatabaseService;
 
     @GetMapping("/food-information")
     public ResponseEntity<?> populateFood( ){
         populateDatabaseService.populateFood();
+        return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/category-nutrition")
+    public ResponseEntity<?> populateCategoryNutrition( ){
+        populateDatabaseService.populateNutrition();
         return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);
     }
 }

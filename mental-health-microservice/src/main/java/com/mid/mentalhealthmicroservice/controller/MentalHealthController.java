@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/mental-health")
 public class MentalHealthController {
     @Autowired
-    MentalHealthService mentalHealthService;
+    private MentalHealthService mentalHealthService;
 
     @PostMapping("exercise/create")
     public ResponseEntity<?> createExercise(@RequestBody MentalExerciseDTO mentalExerciseDTO){

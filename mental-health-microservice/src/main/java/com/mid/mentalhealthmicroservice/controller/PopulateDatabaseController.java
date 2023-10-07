@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/populate")
 public class PopulateDatabaseController {
     @Autowired
-    PopulateDatabaseService populateDatabaseService;
+    private PopulateDatabaseService populateDatabaseService;
 
     @GetMapping("/exercise")
     public ResponseEntity<?> populateExercise( ){

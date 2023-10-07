@@ -13,10 +13,10 @@ import java.util.List;
 @Service
 public class PopulateDatabaseService {
     @Autowired
-    CategoryBasedExerciseRepository categoryBasedExerciseRepository;
+    private CategoryBasedExerciseRepository categoryBasedExerciseRepository;
 
     @Autowired
-    MentalExerciseRepository mentalExerciseRepository;
+    private MentalExerciseRepository mentalExerciseRepository;
 
     public void populateExercise(){
 

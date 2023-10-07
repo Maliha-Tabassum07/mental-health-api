@@ -9,7 +9,6 @@ public class MentalExerciseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String exercise;
-//    @Column(length = 1337)
     private String description;
 
     public MentalExerciseEntity() {

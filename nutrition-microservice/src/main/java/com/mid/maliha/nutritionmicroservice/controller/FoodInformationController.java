@@ -1,20 +1,18 @@
 package com.mid.maliha.nutritionmicroservice.controller;
 
+import com.mid.maliha.nutritionmicroservice.dto.MedicalConditionDTO;
 import com.mid.maliha.nutritionmicroservice.exception.FoodNotFound;
 import com.mid.maliha.nutritionmicroservice.service.NutritionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/nutrition")
 public class FoodInformationController {
     @Autowired
-    NutritionService nutritionService;
+    private NutritionService nutritionService;
 
     @GetMapping("/recipe/all")
     public ResponseEntity<?> allFoodRecipe(){
@@ -33,4 +31,15 @@ public class FoodInformationController {
     public ResponseEntity<?> searchFoodNutrition(@PathVariable String food ) throws FoodNotFound {
         return new ResponseEntity<>(nutritionService.getFoodNutrition(food),HttpStatus.ACCEPTED);
     }
+//include in feign client
+    @GetMapping("/search/{foodId}")
+    public ResponseEntity<?> searchFoodNutritionById(@PathVariable Integer foodId ) throws FoodNotFound {
+        return new ResponseEntity<>(nutritionService.getFoodNutritionById(foodId),HttpStatus.ACCEPTED);
+    }
+//include in feign client
+    @GetMapping("/search/{categoryId}")
+    public ResponseEntity<?> searchCategoryBasedMenuById(@PathVariable Integer categoryId ) throws FoodNotFound {
+        return new ResponseEntity<>(nutritionService.categoryBasedMenu(categoryId),HttpStatus.ACCEPTED);
+    }
+
 }

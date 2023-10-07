@@ -50,11 +50,11 @@ public class CategoryBasedNutritionEntity {
         this.recommendation = recommendation;
     }
 
-    public List<FoodInformationEntity> getFoodNutritionDTOList() {
+    public List<FoodInformationEntity> getFoodNutritionEntityList() {
         return foodInformationEntityList;
     }
 
-    public void setFoodNutritionDTOList(List<FoodInformationEntity> foodNutritionDTOList) {
+    public void setFoodNutritionEntityList(List<FoodInformationEntity> foodNutritionDTOList) {
         this.foodInformationEntityList = foodNutritionDTOList;
     }
 }
