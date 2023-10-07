@@ -1,6 +1,6 @@
 package com.mid.maliha.nutritionmicroservice.utils;
 
-import com.mid.mentalhealthmicroservice.constants.AppConstants;
+import com.mid.maliha.nutritionmicroservice.constants.AppConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

@@ -18,13 +18,15 @@ public class PopulateDatabaseController {
 
     @GetMapping("/exercise")
     public ResponseEntity<?> populateExercise( ){
-        populateDatabaseService.populateExercise();
-        return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);
+        if(populateDatabaseService.populateExercise()){
+        return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);}
+        return new ResponseEntity<>("Cannot perform this action", HttpStatus.FORBIDDEN);
     }
     @GetMapping("/category")
     public ResponseEntity<?> populateCategory(){
-        populateDatabaseService.populateCategory();
-        return new ResponseEntity<>("Database populated",HttpStatus.ACCEPTED);
+        if(populateDatabaseService.populateCategory()){
+            return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);}
+        return new ResponseEntity<>("Cannot perform this action",HttpStatus.FORBIDDEN);
     }
 
 }

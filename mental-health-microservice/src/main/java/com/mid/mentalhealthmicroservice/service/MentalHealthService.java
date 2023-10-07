@@ -53,7 +53,10 @@ public class MentalHealthService {
         }
         throw new ExerciseNotFound();
     }
-    public CategoryBasedExerciseDTO getUserBasedMentalExercise(String userId) throws UserNotFound{
+    public CategoryBasedExerciseDTO getUserBasedMentalExercise() throws UserNotFound{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        String userId=userFeignClient.getUserByEmail(userEmail).getId();
         if(userInformationRepository.existsByUserId(userId)) {
             CategoryBasedExerciseEntity categoryBasedExerciseEntity=categoryBasedExerciseRepository.findByCategory(userInformationRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException()).getMentalHealthCategory()).orElseThrow(() -> new NullPointerException());
             CategoryBasedExerciseDTO categoryBasedExerciseDTO=new ModelMapper().map(categoryBasedExerciseEntity,CategoryBasedExerciseDTO.class);
@@ -72,7 +75,10 @@ public class MentalHealthService {
         String userEmail = authentication.getName();
         return userFeignClient.getUserByEmail(userEmail);
     }
-    public MentalHealthRecommendationDTO getUserBasedRecommendation(String userId) throws UserNotFound {
+    public MentalHealthRecommendationDTO getUserBasedRecommendation() throws UserNotFound {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        String userId=userFeignClient.getUserByEmail(userEmail).getId();
         if(userInformationRepository.existsByUserId(userId)) {
             CategoryBasedExerciseEntity categoryBasedExerciseEntity=categoryBasedExerciseRepository.findByCategory(userInformationRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException()).getMentalHealthCategory()).orElseThrow(() -> new NullPointerException());
             MentalHealthRecommendationDTO mentalHealthRecommendationDTO=new ModelMapper().map(categoryBasedExerciseEntity,MentalHealthRecommendationDTO.class);
@@ -81,13 +87,14 @@ public class MentalHealthService {
         throw new UserNotFound();
     }
 
-    public Boolean findMentalHealth(QuestionsDTO questionsDTO,String userId){
+    public Boolean findMentalHealth(QuestionsDTO questionsDTO){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        String userId=userFeignClient.getUserByEmail(userEmail).getId();
         if(userInformationRepository.existsByUserId(userId)){
             return false;
         }
         else{
-            //*******Check if exists in user-profile-service
-            //*******If exists then proceed with next parts otherwise print, the user doesn't exist
             UserInformationEntity userInformationEntity=new UserInformationEntity();
             userInformationEntity.setUserId(userId);
 
@@ -124,6 +131,9 @@ public class MentalHealthService {
             else if (questionsDTO.getSleep()==1 && questionsDTO.getStress()==1 && questionsDTO.getAnxiety()==1) {
                 userInformationEntity.setMentalHealthCategory("Severe");
                 userInformationRepository.save(userInformationEntity);
+            }
+            else {
+                return false;
             }
             return true;
         }

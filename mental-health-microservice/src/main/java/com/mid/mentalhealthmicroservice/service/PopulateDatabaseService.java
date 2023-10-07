@@ -18,8 +18,10 @@ public class PopulateDatabaseService {
     @Autowired
     private MentalExerciseRepository mentalExerciseRepository;
 
-    public void populateExercise(){
-
+    public Boolean populateExercise(){
+        if (mentalExerciseRepository.existsById(1)){
+            return false;
+        }
         MentalExerciseEntity mentalExercise1=new MentalExerciseEntity();
         mentalExercise1.setExercise("Mindfulness Meditation");
         mentalExercise1.setDescription("Find a quiet and comfortable place to sit or lie down.Close your eyes and focus your attention on your breath. Breathe naturally and pay close attention to the sensation of each breath.");
@@ -54,9 +56,13 @@ public class PopulateDatabaseService {
         mentalExercise7.setExercise("Visualization");
         mentalExercise7.setDescription("Close your eyes and visualize a calming and safe place. Imagine yourself in this place, engaging all your senses to make it as vivid as possible. Spend a few minutes here.");
         mentalExerciseRepository.save(mentalExercise7);
+        return true;
 
     }
-    public void populateCategory(){
+    public Boolean populateCategory(){
+        if (categoryBasedExerciseRepository.existsById(1)){
+            return false;
+        }
         List<MentalExerciseEntity> mentalExerciseEntitiesList=new ArrayList<>();
         CategoryBasedExerciseEntity categoryBasedExerciseEntity1=new CategoryBasedExerciseEntity();
         categoryBasedExerciseEntity1.setCategory("Normal");
@@ -137,5 +143,6 @@ public class PopulateDatabaseService {
         mentalExerciseEntitiesList.add(mentalExerciseRepository.findById(7).get());
         categoryBasedExerciseEntity8.setMentalExerciseEntities(mentalExerciseEntitiesList);
         categoryBasedExerciseRepository.save(categoryBasedExerciseEntity8);
+        return true;
     }
 }

@@ -30,27 +30,22 @@ public class MentalHealthController {
         return new ResponseEntity<>(mentalHealthService.getMentalExercise(exercise),HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("survey/{userId}")
-    public ResponseEntity<?> questions(@RequestBody QuestionsDTO questionsDTO, @PathVariable String userId){
-        if (mentalHealthService.findMentalHealth(questionsDTO,userId)){
+    @PostMapping("survey")
+    public ResponseEntity<?> questions(@RequestBody QuestionsDTO questionsDTO){
+        if (mentalHealthService.findMentalHealth(questionsDTO)){
             return new ResponseEntity<>("Thank you",HttpStatus.ACCEPTED );
         }
         return new ResponseEntity<>("You already took the survey!",HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/exercises/{userId}")
-    public ResponseEntity<?> userBasedExercise(@PathVariable String userId ) throws UserNotFound{
-        return new ResponseEntity<>(mentalHealthService.getUserBasedMentalExercise(userId),HttpStatus.ACCEPTED);
+    @GetMapping("/exercises/user-specific")
+    public ResponseEntity<?> userBasedExercise() throws UserNotFound{
+        return new ResponseEntity<>(mentalHealthService.getUserBasedMentalExercise(),HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/recommendations/{userId}")
-    public ResponseEntity<?> userBasedRecommendation(@PathVariable String userId ) throws UserNotFound {
-        return new ResponseEntity<>(mentalHealthService.getUserBasedRecommendation(userId),HttpStatus.ACCEPTED);
-    }
-
-    @GetMapping("/email")
-    public ResponseEntity<?> email(){
-        return new ResponseEntity<>(mentalHealthService.getCurrentUser(),HttpStatus.OK);
+    @GetMapping("/recommendations")
+    public ResponseEntity<?> userBasedRecommendation() throws UserNotFound {
+        return new ResponseEntity<>(mentalHealthService.getUserBasedRecommendation(),HttpStatus.ACCEPTED);
     }
 
 }
