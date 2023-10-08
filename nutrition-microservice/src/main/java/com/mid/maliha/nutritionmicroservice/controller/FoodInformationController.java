@@ -18,7 +18,7 @@ public class FoodInformationController {
     public ResponseEntity<?> allFoodRecipe(){
         return new ResponseEntity<>(nutritionService.getAllFoodRecipe(),HttpStatus.ACCEPTED);
     }
-    @GetMapping("/search/{food}")
+    @GetMapping("/recipe/{food}")
     public ResponseEntity<?> searchFoodRecipe(@PathVariable String food ) throws FoodNotFound {
         return new ResponseEntity<>(nutritionService.getFoodRecipe(food),HttpStatus.ACCEPTED);
     }
@@ -31,15 +31,30 @@ public class FoodInformationController {
     public ResponseEntity<?> searchFoodNutrition(@PathVariable String food ) throws FoodNotFound {
         return new ResponseEntity<>(nutritionService.getFoodNutrition(food),HttpStatus.ACCEPTED);
     }
+
+    @PostMapping("/user/survey")
+    public ResponseEntity<?> setUserInfo(@RequestBody MedicalConditionDTO medicalConditionDTO)throws FoodNotFound{
+        return new ResponseEntity<>(nutritionService.setCategory(medicalConditionDTO),HttpStatus.ACCEPTED);
+    }
+    @GetMapping("/user/recommendations")
+    public ResponseEntity<?> getRecommendation()throws FoodNotFound{
+        return new ResponseEntity<>(nutritionService.categoryBasedRecommendation(),HttpStatus.ACCEPTED);
+    }
 //include in feign client
-    @GetMapping("/search/{foodId}")
+    @GetMapping("/search-foodId/{foodId}")
     public ResponseEntity<?> searchFoodNutritionById(@PathVariable Integer foodId ) throws FoodNotFound {
         return new ResponseEntity<>(nutritionService.getFoodNutritionById(foodId),HttpStatus.ACCEPTED);
     }
 //include in feign client
-    @GetMapping("/search/{categoryId}")
+        @GetMapping("/search/{category}")
+    public ResponseEntity<?> searchFoodNutritionById(@PathVariable String category ) throws FoodNotFound {
+        return new ResponseEntity<>(nutritionService.categoryBasedNutrition(category),HttpStatus.ACCEPTED);
+    }
+//include in feign client
+    @GetMapping("/search-categoryId/{categoryId}")
     public ResponseEntity<?> searchCategoryBasedMenuById(@PathVariable Integer categoryId ) throws FoodNotFound {
         return new ResponseEntity<>(nutritionService.categoryBasedMenu(categoryId),HttpStatus.ACCEPTED);
     }
+
 
 }

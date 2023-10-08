@@ -5,6 +5,8 @@ import com.mid.mentalhealthmicroservice.dto.MoodDTO;
 import com.mid.mentalhealthmicroservice.dto.MoodDateDTO;
 import com.mid.mentalhealthmicroservice.entity.MentalExerciseEntity;
 import com.mid.mentalhealthmicroservice.entity.MoodEntity;
+import com.mid.mentalhealthmicroservice.exception.MoodDataUnavailable;
+import com.mid.mentalhealthmicroservice.exception.UserNotFound;
 import com.mid.mentalhealthmicroservice.networkmanager.UserFeignClient;
 import com.mid.mentalhealthmicroservice.repository.MoodRepository;
 import org.modelmapper.ModelMapper;
@@ -36,15 +38,17 @@ public class MoodService {
         return new ModelMapper().map(moodRepository.save(moodEntity),MoodDTO.class);
     }
 
-    public List<MoodDateDTO> trackMood(){
+    public List<MoodDateDTO> trackMood() throws MoodDataUnavailable {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         String userId =userFeignClient.getUserByEmail(userEmail).getId();
-
-        List<MoodDateDTO> moodDTOList=new ArrayList<>();
-        for(MoodEntity moodEntity:moodRepository.findAllByUserId(userId)){
-            moodDTOList.add(new ModelMapper().map(moodEntity,MoodDateDTO.class));
+        if (moodRepository.existsByUserId(userId)) {
+            List<MoodDateDTO> moodDTOList = new ArrayList<>();
+            for (MoodEntity moodEntity : moodRepository.findAllByUserId(userId)) {
+                moodDTOList.add(new ModelMapper().map(moodEntity, MoodDateDTO.class));
+            }
+            return moodDTOList;
         }
-        return moodDTOList;
+        throw new MoodDataUnavailable();
     }
 }

@@ -17,13 +17,16 @@ public class PopulateDatabaseController {
 
     @GetMapping("/food-information")
     public ResponseEntity<?> populateFood( ){
-        populateDatabaseService.populateFood();
-        return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);
+
+        if(populateDatabaseService.populateFood()){
+        return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);}
+        return new ResponseEntity<>("Cannot perform this action", HttpStatus.FORBIDDEN);
     }
 
     @GetMapping("/category-nutrition")
     public ResponseEntity<?> populateCategoryNutrition( ){
-        populateDatabaseService.populateNutrition();
-        return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);
+        if(populateDatabaseService.populateNutrition()){
+        return new ResponseEntity<>("Database populated", HttpStatus.ACCEPTED);}
+        return new ResponseEntity<>("Cannot perform this action", HttpStatus.FORBIDDEN);
     }
 }

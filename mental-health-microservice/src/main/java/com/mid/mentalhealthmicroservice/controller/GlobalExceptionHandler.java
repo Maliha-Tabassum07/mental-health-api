@@ -1,8 +1,6 @@
 package com.mid.mentalhealthmicroservice.controller;
 
-import com.mid.mentalhealthmicroservice.exception.CustomException;
-import com.mid.mentalhealthmicroservice.exception.ExerciseNotFound;
-import com.mid.mentalhealthmicroservice.exception.UserNotFound;
+import com.mid.mentalhealthmicroservice.exception.*;
 import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +21,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({UserNotFound.class})
     public ResponseEntity<?> handleUserNotFound(){
         return new ResponseEntity<>(new UserNotFound().getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({MoodDataUnavailable.class})
+    public ResponseEntity<?> handleUserMoodNotFound(){
+        return new ResponseEntity<>(new MoodDataUnavailable().getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler({WrongInput.class})
+    public ResponseEntity<?> handleWrongInput(){
+        return new ResponseEntity<>(new WrongInput().getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 

@@ -11,14 +11,14 @@ public class UserInformationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String userId;
-    private String medicalCategory;
+    private String category;
     public UserInformationEntity() {
     }
 
-    public UserInformationEntity(Integer id, String userId, String mood, String medicalCategory, LocalDate currentDate) {
+    public UserInformationEntity(Integer id, String userId, String mood, String category, LocalDate currentDate) {
         this.id = id;
         this.userId = userId;
-        this.medicalCategory = medicalCategory;
+        this.category = category;
     }
 
     public Integer getId() {
@@ -36,12 +36,12 @@ public class UserInformationEntity {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    public String getMedicalCategory() {
-        return medicalCategory;
+    public String getCategory() {
+        return category;
     }
 
-    public void setMedicalCategory(String medicalCategory) {
-        this.medicalCategory = medicalCategory;
+    public void setCategory(String medicalCategory) {
+        this.category = medicalCategory;
     }
 
 }

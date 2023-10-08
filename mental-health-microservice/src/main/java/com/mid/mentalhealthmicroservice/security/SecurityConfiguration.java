@@ -31,6 +31,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/populate/exercise").hasAuthority("ADMIN")
                                 .requestMatchers("/populate/exercise").hasAuthority("ADMIN")
                                 .requestMatchers("/mental-health/exercise/create").hasAuthority("ADMIN")
+                                .requestMatchers("/mental-health/exercise/update/{exerciseId}").hasAuthority("ADMIN")
                                 .requestMatchers("/mental-health/search/{exercise}").hasAuthority("USER")
                                 .requestMatchers("/mental-health/survey").hasAuthority("USER")
                                 .requestMatchers("/mental-health/exercises/user-specific").hasAuthority("USER")

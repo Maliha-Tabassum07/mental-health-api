@@ -182,18 +182,13 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     public SendHealthDataDto sendHealthData() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<UserEntity> user = userRepository.findByEmail(authentication.getName());
-
         if (!user.isPresent()) {
             // Handle the case where the user is not found (authentication.getName() might not be a valid email)
             throw new ResourceNotFoundException("User not found");
         }
-
         String userId = user.get().getId();
-
-        UserProfileEntity userProfileEntity = userProfileRepository.findByUserId(userId).get();
+//        UserProfileEntity userProfileEntity = userProfileRepository.findByUserId(userId).get();
         HealthDataEntity healthDataEntity = healthDataRepository.findById(userId).get();
-
-
         SendHealthDataDto sendHealthDataDto = new SendHealthDataDto();
         sendHealthDataDto.setUserId(userId);
         sendHealthDataDto.setHeightCm(healthDataEntity.getHeightCm());
@@ -203,7 +198,7 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
         sendHealthDataDto.setBmi(healthDataEntity.getBmi());
         sendHealthDataDto.setDate(healthDataEntity.getDate());
         sendHealthDataDto.setSleepHour(healthDataEntity.getSleepHour());
-        sendHealthDataDto.setAge(userProfileEntity.getAge());
+//        sendHealthDataDto.setAge(userProfileEntity.getAge());
 
         return sendHealthDataDto;
     }

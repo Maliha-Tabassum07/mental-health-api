@@ -2,6 +2,8 @@ package com.mid.mentalhealthmicroservice.controller;
 
 import com.mid.mentalhealthmicroservice.dto.MentalExerciseDTO;
 import com.mid.mentalhealthmicroservice.dto.MoodDTO;
+import com.mid.mentalhealthmicroservice.exception.MoodDataUnavailable;
+import com.mid.mentalhealthmicroservice.exception.UserNotFound;
 import com.mid.mentalhealthmicroservice.service.MentalHealthService;
 import com.mid.mentalhealthmicroservice.service.MoodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ public class MoodController {
     }
 
     @GetMapping("/track")
-    public ResponseEntity<?> trackMood(){
+    public ResponseEntity<?> trackMood()throws MoodDataUnavailable {
         return new ResponseEntity<>(moodService.trackMood(), HttpStatus.CREATED);
     }
 

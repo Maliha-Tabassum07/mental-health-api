@@ -18,7 +18,11 @@ public class PopulateDatabaseService {
     @Autowired
     private CategoryNutritionRepository categoryNutritionRepository;
 
-    public void populateFood(){
+    public Boolean populateFood(){
+
+        if (foodInformationRepository.existsById(1)){
+            return false;
+        }
 
         FoodInformationEntity foodInformationEntity1=new FoodInformationEntity();
         foodInformationEntity1.setFood("Bread");
@@ -140,9 +144,14 @@ public class PopulateDatabaseService {
         foodInformationEntity15.setServing("1 piece");
         foodInformationRepository.save(foodInformationEntity15);
 
+        return true;
+
     }
 
-    public void populateNutrition(){
+    public Boolean populateNutrition(){
+        if (categoryNutritionRepository.existsById(1)){
+            return false;
+        }
 
         List<FoodInformationEntity> foodInformationEntityList=new ArrayList<>();
         CategoryBasedNutritionEntity categoryBasedNutritionEntity=new CategoryBasedNutritionEntity();
@@ -163,6 +172,7 @@ public class PopulateDatabaseService {
         foodInformationEntityList.add(foodInformationRepository.findById(13).get());
         foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity);
 
         foodInformationEntityList=new ArrayList<>();
@@ -184,6 +194,7 @@ public class PopulateDatabaseService {
         foodInformationEntityList.add(foodInformationRepository.findById(13).get());
         foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity2.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity2);
 
         foodInformationEntityList=new ArrayList<>();
@@ -205,6 +216,7 @@ public class PopulateDatabaseService {
         //foodInformationEntityList.add(foodInformationRepository.findById(13).get());
         //foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity3.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity3);
 
         foodInformationEntityList=new ArrayList<>();
@@ -226,6 +238,7 @@ public class PopulateDatabaseService {
         foodInformationEntityList.add(foodInformationRepository.findById(13).get());
         foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity4.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity4);
 
         foodInformationEntityList=new ArrayList<>();
@@ -247,6 +260,7 @@ public class PopulateDatabaseService {
 //        foodInformationEntityList.add(foodInformationRepository.findById(13).get());
 //        foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity5.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity5);
 
         foodInformationEntityList=new ArrayList<>();
@@ -268,6 +282,7 @@ public class PopulateDatabaseService {
 //        foodInformationEntityList.add(foodInformationRepository.findById(13).get());
 //        foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity6.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity6);
 
         foodInformationEntityList=new ArrayList<>();
@@ -289,6 +304,7 @@ public class PopulateDatabaseService {
         foodInformationEntityList.add(foodInformationRepository.findById(13).get());
         foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity7.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity7);
 
         foodInformationEntityList=new ArrayList<>();
@@ -310,7 +326,9 @@ public class PopulateDatabaseService {
 //        foodInformationEntityList.add(foodInformationRepository.findById(13).get());
 //        foodInformationEntityList.add(foodInformationRepository.findById(14).get());
         foodInformationEntityList.add(foodInformationRepository.findById(15).get());
+        categoryBasedNutritionEntity8.setFoodNutritionEntityList(foodInformationEntityList);
         categoryNutritionRepository.save(categoryBasedNutritionEntity8);
+        return true;
 
     }
 }

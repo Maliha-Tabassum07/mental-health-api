@@ -6,6 +6,7 @@ import com.mid.mentalhealthmicroservice.entity.MentalExerciseEntity;
 import com.mid.mentalhealthmicroservice.entity.UserInformationEntity;
 import com.mid.mentalhealthmicroservice.exception.ExerciseNotFound;
 import com.mid.mentalhealthmicroservice.exception.UserNotFound;
+import com.mid.mentalhealthmicroservice.exception.WrongInput;
 import com.mid.mentalhealthmicroservice.networkmanager.UserFeignClient;
 import com.mid.mentalhealthmicroservice.repository.CategoryBasedExerciseRepository;
 import com.mid.mentalhealthmicroservice.repository.MentalExerciseRepository;
@@ -34,6 +35,13 @@ public class MentalHealthService {
 
     public MentalExerciseDTO createMentalExercise(MentalExerciseDTO mentalExerciseDTO){
         MentalExerciseEntity mentalExercise=new MentalExerciseEntity();
+        mentalExercise.setExercise(mentalExerciseDTO.getExercise());
+        mentalExercise.setDescription(mentalExerciseDTO.getDescription());
+        return new ModelMapper().map(mentalExerciseRepository.save(mentalExercise),MentalExerciseDTO.class);
+    }
+
+    public MentalExerciseDTO updateMentalExercise(Integer id,MentalExerciseDTO mentalExerciseDTO){
+        MentalExerciseEntity mentalExercise=mentalExerciseRepository.findById(id).orElseThrow(() -> new NullPointerException("No exercise"));
         mentalExercise.setExercise(mentalExerciseDTO.getExercise());
         mentalExercise.setDescription(mentalExerciseDTO.getDescription());
         return new ModelMapper().map(mentalExerciseRepository.save(mentalExercise),MentalExerciseDTO.class);
@@ -82,12 +90,17 @@ public class MentalHealthService {
         if(userInformationRepository.existsByUserId(userId)) {
             CategoryBasedExerciseEntity categoryBasedExerciseEntity=categoryBasedExerciseRepository.findByCategory(userInformationRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException()).getMentalHealthCategory()).orElseThrow(() -> new NullPointerException());
             MentalHealthRecommendationDTO mentalHealthRecommendationDTO=new ModelMapper().map(categoryBasedExerciseEntity,MentalHealthRecommendationDTO.class);
+            List<String> exercise=new ArrayList<>();
+            for (MentalExerciseEntity mentalExerciseEntity:categoryBasedExerciseEntity.getMentalExerciseEntities()){
+                exercise.add(mentalExerciseEntity.getExercise());
+            }
+            mentalHealthRecommendationDTO.setExercises(exercise);
             return mentalHealthRecommendationDTO;
         }
         throw new UserNotFound();
     }
 
-    public Boolean findMentalHealth(QuestionsDTO questionsDTO){
+    public Boolean findMentalHealth(QuestionsDTO questionsDTO)throws WrongInput {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         String userId=userFeignClient.getUserByEmail(userEmail).getId();
@@ -133,7 +146,7 @@ public class MentalHealthService {
                 userInformationRepository.save(userInformationEntity);
             }
             else {
-                return false;
+                throw new WrongInput();
             }
             return true;
         }

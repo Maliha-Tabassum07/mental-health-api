@@ -1,19 +1,19 @@
 package com.mid.maliha.nutritionmicroservice.service;
 
-import com.mid.maliha.nutritionmicroservice.dto.CategoryBasedNutritionDTO;
-import com.mid.maliha.nutritionmicroservice.dto.FoodNutritionDTO;
-import com.mid.maliha.nutritionmicroservice.dto.FoodRecipeDTO;
-import com.mid.maliha.nutritionmicroservice.dto.MedicalConditionDTO;
+import com.mid.maliha.nutritionmicroservice.dto.*;
 import com.mid.maliha.nutritionmicroservice.entity.CategoryBasedNutritionEntity;
 import com.mid.maliha.nutritionmicroservice.entity.FoodInformationEntity;
 import com.mid.maliha.nutritionmicroservice.entity.UserInformationEntity;
 import com.mid.maliha.nutritionmicroservice.exception.FoodNotFound;
+import com.mid.maliha.nutritionmicroservice.networkmanager.UserFeignClient;
 import com.mid.maliha.nutritionmicroservice.repository.CategoryNutritionRepository;
 import com.mid.maliha.nutritionmicroservice.repository.FoodInformationRepository;
 import com.mid.maliha.nutritionmicroservice.repository.UserInformationRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +32,11 @@ public class NutritionService {
     @Autowired
     private UserInformationRepository userInformationRepository;
 
+    @Autowired
+    private UserFeignClient userFeignClient;
+
+
+
     public List<FoodRecipeDTO> getAllFoodRecipe(){
         List<FoodRecipeDTO> foodRecipeDTOList=new ArrayList<>();
         for(FoodInformationEntity foodInformationEntity:foodInformationRepository.findAll()){
@@ -44,7 +49,7 @@ public class NutritionService {
 
     public FoodRecipeDTO getFoodRecipe (String food) throws FoodNotFound {
         if(foodInformationRepository.existsByFood(food)){
-            return new ModelMapper().map(foodInformationRepository.findByFood(food).orElseThrow(() -> new NullPointerException("No exercise")),FoodRecipeDTO.class);
+            return new ModelMapper().map(foodInformationRepository.findByFood(food).get(),FoodRecipeDTO.class);
         }
         throw new FoodNotFound();
     }
@@ -71,9 +76,17 @@ public class NutritionService {
     }
 
     public Boolean setCategory(MedicalConditionDTO medicalConditionDTO){
-        //get blood sugar level from the feign client and remove the below value
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        String userId=userFeignClient.getUserByEmail(userEmail).getId();
+        if(userInformationRepository.existsByUserId(userId)){
+            return false;
+        }
+        SendHealthDataDto healthDataDto=userFeignClient.sendHealthData();
         UserInformationEntity userInformationEntity=new UserInformationEntity();
-        Double blood_sugar=0.0;
+        userInformationEntity.setUserId(userId);
+
+        Double blood_sugar=healthDataDto.getBloodSugarLevel();
         Integer highBloodPressure=0;
         if (medicalConditionDTO.getBpLow()<=85 && medicalConditionDTO.getBpLow()<=125){
             highBloodPressure=0;
@@ -82,37 +95,37 @@ public class NutritionService {
             highBloodPressure=1;
         }
         if(medicalConditionDTO.getAllergy()==0 && blood_sugar<=7 && highBloodPressure==0){
-            userInformationEntity.setMedicalCategory("Normal");
+            userInformationEntity.setCategory("Normal");
             userInformationRepository.save(userInformationEntity);
         }
         else if(medicalConditionDTO.getAllergy()==0 && blood_sugar<=7 && highBloodPressure==1){
-            userInformationEntity.setMedicalCategory("HighBP");
+            userInformationEntity.setCategory("HighBP");
             userInformationRepository.save(userInformationEntity);
         }
         else if(medicalConditionDTO.getAllergy()==0 && blood_sugar>7 && highBloodPressure==0){
-            userInformationEntity.setMedicalCategory("Diabetic");
+            userInformationEntity.setCategory("Diabetic");
             userInformationRepository.save(userInformationEntity);
         }
         else if(medicalConditionDTO.getAllergy()==1 && blood_sugar<=7 && highBloodPressure==0){
-            userInformationEntity.setMedicalCategory("Allergy");
+            userInformationEntity.setCategory("Allergy");
             userInformationRepository.save(userInformationEntity);
         }
         else if(medicalConditionDTO.getAllergy()==0 && blood_sugar>7 && highBloodPressure==1){
-            userInformationEntity.setMedicalCategory("Diabetic & HighBP");
+            userInformationEntity.setCategory("Diabetic & HighBP");
             userInformationRepository.save(userInformationEntity);
         }
         else if(medicalConditionDTO.getAllergy()==1 && blood_sugar>7 && highBloodPressure==0){
-            userInformationEntity.setMedicalCategory("Allergy & Diabetic");
+            userInformationEntity.setCategory("Allergy & Diabetic");
             userInformationRepository.save(userInformationEntity);
         }
 
         else if(medicalConditionDTO.getAllergy()==1 && blood_sugar<=7 && highBloodPressure==1){
-            userInformationEntity.setMedicalCategory("Allergy & HighBP");
+            userInformationEntity.setCategory("Allergy & HighBP");
             userInformationRepository.save(userInformationEntity);
         }
 
         else if(medicalConditionDTO.getAllergy()==1 && blood_sugar>7 && highBloodPressure==1){
-            userInformationEntity.setMedicalCategory("Allergy, Diabetic & HighBP");
+            userInformationEntity.setCategory("Allergy, Diabetic & HighBP");
             userInformationRepository.save(userInformationEntity);
         }
         return true;
@@ -127,4 +140,25 @@ public class NutritionService {
         return categoryBasedNutritionDTO;
 
     }
+    public NutritionRecommendationDTO categoryBasedRecommendation() throws FoodNotFound{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        String userId=userFeignClient.getUserByEmail(userEmail).getId();
+        if(userInformationRepository.existsByUserId(userId)){
+            CategoryBasedNutritionEntity categoryBasedNutritionEntity=categoryNutritionRepository.findByCategory(userInformationRepository.findByUserId(userId).get().getCategory()).get();
+            return new ModelMapper().map(categoryBasedNutritionEntity,NutritionRecommendationDTO.class);
+        }
+        throw new FoodNotFound();
+    }
+    public CategoryBasedNutritionDTO categoryBasedNutrition(String category) throws FoodNotFound{
+        CategoryBasedNutritionEntity categoryBasedNutritionEntity=categoryNutritionRepository.findByCategory(category).get();
+        List<FoodNutritionDTO> foodNutritionDTOList=new ArrayList<>();
+        for (FoodInformationEntity foodInformationEntity:categoryBasedNutritionEntity.getFoodNutritionEntityList())
+            foodNutritionDTOList.add(new ModelMapper().map(foodInformationEntity,FoodNutritionDTO.class));
+        CategoryBasedNutritionDTO categoryBasedNutritionDTO=new ModelMapper().map(categoryBasedNutritionEntity,CategoryBasedNutritionDTO.class);
+        categoryBasedNutritionDTO.setMenuList(foodNutritionDTOList);
+        return categoryBasedNutritionDTO;
+
+    }
+
 }

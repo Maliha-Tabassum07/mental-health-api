@@ -4,6 +4,7 @@ import com.mid.mentalhealthmicroservice.dto.MentalExerciseDTO;
 import com.mid.mentalhealthmicroservice.dto.QuestionsDTO;
 import com.mid.mentalhealthmicroservice.exception.ExerciseNotFound;
 import com.mid.mentalhealthmicroservice.exception.UserNotFound;
+import com.mid.mentalhealthmicroservice.exception.WrongInput;
 import com.mid.mentalhealthmicroservice.service.MentalHealthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,11 @@ public class MentalHealthController {
         return new ResponseEntity<>(mentalHealthService.createMentalExercise(mentalExerciseDTO),HttpStatus.CREATED);
     }
 
+    @PutMapping("exercise/update/{exerciseId}")
+    public ResponseEntity<?> updateExercise(@PathVariable Integer exerciseId,@RequestBody MentalExerciseDTO mentalExerciseDTO){
+        return new ResponseEntity<>(mentalHealthService.updateMentalExercise(exerciseId,mentalExerciseDTO),HttpStatus.CREATED);
+    }
+
     @GetMapping("/exercises/all")
     public ResponseEntity<?> allExercise(){
         return new ResponseEntity<>(mentalHealthService.getAllMentalExercise(),HttpStatus.ACCEPTED);
@@ -31,11 +37,11 @@ public class MentalHealthController {
     }
 
     @PostMapping("survey")
-    public ResponseEntity<?> questions(@RequestBody QuestionsDTO questionsDTO){
+    public ResponseEntity<?> questions(@RequestBody QuestionsDTO questionsDTO)throws WrongInput {
         if (mentalHealthService.findMentalHealth(questionsDTO)){
             return new ResponseEntity<>("Thank you",HttpStatus.ACCEPTED );
-        }
-        return new ResponseEntity<>("You already took the survey!",HttpStatus.BAD_REQUEST);
+        }else{
+        return new ResponseEntity<>("You already took the survey!",HttpStatus.BAD_REQUEST);}
     }
 
     @GetMapping("/exercises/user-specific")
