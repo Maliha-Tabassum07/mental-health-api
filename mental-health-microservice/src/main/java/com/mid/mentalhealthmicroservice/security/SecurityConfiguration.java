@@ -29,7 +29,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/mental-health/exercises/all").permitAll()
                                 .requestMatchers("/populate/exercise").hasAuthority("ADMIN")
-                                .requestMatchers("/populate/exercise").hasAuthority("ADMIN")
+                                .requestMatchers("/populate/category").hasAuthority("ADMIN")
                                 .requestMatchers("/mental-health/exercise/create").hasAuthority("ADMIN")
                                 .requestMatchers("/mental-health/exercise/update/{exerciseId}").hasAuthority("ADMIN")
                                 .requestMatchers("/mental-health/search/{exercise}").hasAuthority("USER")

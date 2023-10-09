@@ -5,6 +5,8 @@ import com.mid.maliha.nutritionmicroservice.entity.CategoryBasedNutritionEntity;
 import com.mid.maliha.nutritionmicroservice.entity.FoodInformationEntity;
 import com.mid.maliha.nutritionmicroservice.entity.UserInformationEntity;
 import com.mid.maliha.nutritionmicroservice.exception.FoodNotFound;
+import com.mid.maliha.nutritionmicroservice.exception.UserNotFound;
+import com.mid.maliha.nutritionmicroservice.exception.WrongInput;
 import com.mid.maliha.nutritionmicroservice.networkmanager.UserFeignClient;
 import com.mid.maliha.nutritionmicroservice.repository.CategoryNutritionRepository;
 import com.mid.maliha.nutritionmicroservice.repository.FoodInformationRepository;
@@ -64,18 +66,24 @@ public class NutritionService {
     }
     public FoodNutritionDTO getFoodNutrition (String food) throws FoodNotFound {
         if(foodInformationRepository.existsByFood(food)){
-            return new ModelMapper().map(foodInformationRepository.findByFood(food).orElseThrow(() -> new NullPointerException("No exercise")),FoodNutritionDTO.class);
+            return new ModelMapper().map(foodInformationRepository.findByFood(food).get(),FoodNutritionDTO.class);
         }
         throw new FoodNotFound();
     }
     public FoodNutritionDTO getFoodNutritionById (Integer foodId) throws FoodNotFound {
         if(foodInformationRepository.existsById(foodId)){
-            return new ModelMapper().map(foodInformationRepository.findById(foodId).orElseThrow(() -> new NullPointerException("No exercise")),FoodNutritionDTO.class);
+            return new ModelMapper().map(foodInformationRepository.findById(foodId).get(),FoodNutritionDTO.class);
         }
         throw new FoodNotFound();
     }
+    public FoodRecipeDTO updateFoodRecipe (Integer id,FoodRecipeDTO foodRecipeDTO) throws FoodNotFound{
+        FoodInformationEntity foodInformationEntity=foodInformationRepository.findById(id).orElseThrow(() -> new FoodNotFound());
+        foodInformationEntity.setRecipe(foodRecipeDTO.getRecipe());
+        foodInformationEntity.setFood(foodRecipeDTO.getFood());
+        return new ModelMapper().map(foodInformationRepository.save(foodInformationEntity),FoodRecipeDTO.class);
+    }
 
-    public Boolean setCategory(MedicalConditionDTO medicalConditionDTO){
+    public Boolean setCategory(MedicalConditionDTO medicalConditionDTO)throws WrongInput{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         String userId=userFeignClient.getUserByEmail(userEmail).getId();
@@ -88,7 +96,7 @@ public class NutritionService {
 
         Double blood_sugar=healthDataDto.getBloodSugarLevel();
         Integer highBloodPressure=0;
-        if (medicalConditionDTO.getBpLow()<=85 && medicalConditionDTO.getBpLow()<=125){
+        if (medicalConditionDTO.getBpLow()<=85 && medicalConditionDTO.getBpHigh()<=125){
             highBloodPressure=0;
         }
         else {
@@ -128,19 +136,25 @@ public class NutritionService {
             userInformationEntity.setCategory("Allergy, Diabetic & HighBP");
             userInformationRepository.save(userInformationEntity);
         }
+        else{
+            throw new WrongInput();
+        }
         return true;
     }
     public CategoryBasedNutritionDTO categoryBasedMenu(Integer categoryId) throws FoodNotFound{
-        CategoryBasedNutritionEntity categoryBasedNutritionEntity=categoryNutritionRepository.findById(categoryId).get();
-        List<FoodNutritionDTO> foodNutritionDTOList=new ArrayList<>();
-        for (FoodInformationEntity foodInformationEntity:categoryBasedNutritionEntity.getFoodNutritionEntityList())
-            foodNutritionDTOList.add(new ModelMapper().map(foodInformationEntity,FoodNutritionDTO.class));
-        CategoryBasedNutritionDTO categoryBasedNutritionDTO=new ModelMapper().map(categoryBasedNutritionEntity,CategoryBasedNutritionDTO.class);
-        categoryBasedNutritionDTO.setMenuList(foodNutritionDTOList);
-        return categoryBasedNutritionDTO;
+        if(categoryNutritionRepository.existsById(categoryId)) {
+            CategoryBasedNutritionEntity categoryBasedNutritionEntity = categoryNutritionRepository.findById(categoryId).get();
+            List<FoodNutritionDTO> foodNutritionDTOList = new ArrayList<>();
+            for (FoodInformationEntity foodInformationEntity : categoryBasedNutritionEntity.getFoodNutritionEntityList())
+                foodNutritionDTOList.add(new ModelMapper().map(foodInformationEntity, FoodNutritionDTO.class));
+            CategoryBasedNutritionDTO categoryBasedNutritionDTO = new ModelMapper().map(categoryBasedNutritionEntity, CategoryBasedNutritionDTO.class);
+            categoryBasedNutritionDTO.setMenuList(foodNutritionDTOList);
+            return categoryBasedNutritionDTO;
+        }
+        throw new FoodNotFound();
 
     }
-    public NutritionRecommendationDTO categoryBasedRecommendation() throws FoodNotFound{
+    public NutritionRecommendationDTO categoryBasedRecommendation() throws UserNotFound {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         String userId=userFeignClient.getUserByEmail(userEmail).getId();
@@ -148,10 +162,10 @@ public class NutritionService {
             CategoryBasedNutritionEntity categoryBasedNutritionEntity=categoryNutritionRepository.findByCategory(userInformationRepository.findByUserId(userId).get().getCategory()).get();
             return new ModelMapper().map(categoryBasedNutritionEntity,NutritionRecommendationDTO.class);
         }
-        throw new FoodNotFound();
+        throw new UserNotFound();
     }
     public CategoryBasedNutritionDTO categoryBasedNutrition(String category) throws FoodNotFound{
-        CategoryBasedNutritionEntity categoryBasedNutritionEntity=categoryNutritionRepository.findByCategory(category).get();
+        CategoryBasedNutritionEntity categoryBasedNutritionEntity=categoryNutritionRepository.findByCategory(category).orElseThrow(() -> new FoodNotFound());
         List<FoodNutritionDTO> foodNutritionDTOList=new ArrayList<>();
         for (FoodInformationEntity foodInformationEntity:categoryBasedNutritionEntity.getFoodNutritionEntityList())
             foodNutritionDTOList.add(new ModelMapper().map(foodInformationEntity,FoodNutritionDTO.class));

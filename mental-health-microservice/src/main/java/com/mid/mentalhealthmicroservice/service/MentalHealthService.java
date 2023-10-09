@@ -40,8 +40,8 @@ public class MentalHealthService {
         return new ModelMapper().map(mentalExerciseRepository.save(mentalExercise),MentalExerciseDTO.class);
     }
 
-    public MentalExerciseDTO updateMentalExercise(Integer id,MentalExerciseDTO mentalExerciseDTO){
-        MentalExerciseEntity mentalExercise=mentalExerciseRepository.findById(id).orElseThrow(() -> new NullPointerException("No exercise"));
+    public MentalExerciseDTO updateMentalExercise (Integer id,MentalExerciseDTO mentalExerciseDTO) throws ExerciseNotFound{
+        MentalExerciseEntity mentalExercise=mentalExerciseRepository.findById(id).orElseThrow(() -> new ExerciseNotFound());
         mentalExercise.setExercise(mentalExerciseDTO.getExercise());
         mentalExercise.setDescription(mentalExerciseDTO.getDescription());
         return new ModelMapper().map(mentalExerciseRepository.save(mentalExercise),MentalExerciseDTO.class);
@@ -77,11 +77,6 @@ public class MentalHealthService {
             return categoryBasedExerciseDTO;
         }
         throw new UserNotFound();
-    }
-    public UserDto getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
-        return userFeignClient.getUserByEmail(userEmail);
     }
     public MentalHealthRecommendationDTO getUserBasedRecommendation() throws UserNotFound {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

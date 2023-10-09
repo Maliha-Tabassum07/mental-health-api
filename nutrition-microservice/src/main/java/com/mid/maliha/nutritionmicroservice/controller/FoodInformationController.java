@@ -1,7 +1,10 @@
 package com.mid.maliha.nutritionmicroservice.controller;
 
+import com.mid.maliha.nutritionmicroservice.dto.FoodRecipeDTO;
 import com.mid.maliha.nutritionmicroservice.dto.MedicalConditionDTO;
 import com.mid.maliha.nutritionmicroservice.exception.FoodNotFound;
+import com.mid.maliha.nutritionmicroservice.exception.UserNotFound;
+import com.mid.maliha.nutritionmicroservice.exception.WrongInput;
 import com.mid.maliha.nutritionmicroservice.service.NutritionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,13 +34,20 @@ public class FoodInformationController {
     public ResponseEntity<?> searchFoodNutrition(@PathVariable String food ) throws FoodNotFound {
         return new ResponseEntity<>(nutritionService.getFoodNutrition(food),HttpStatus.ACCEPTED);
     }
+    @PutMapping("recipe/update/{recipeId}")
+    public ResponseEntity<?> updateRecipe(@PathVariable Integer recipeId,@RequestBody FoodRecipeDTO foodRecipeDTO)throws FoodNotFound{
+        return new ResponseEntity<>(nutritionService.updateFoodRecipe(recipeId,foodRecipeDTO),HttpStatus.CREATED);
+    }
 
     @PostMapping("/user/survey")
-    public ResponseEntity<?> setUserInfo(@RequestBody MedicalConditionDTO medicalConditionDTO)throws FoodNotFound{
-        return new ResponseEntity<>(nutritionService.setCategory(medicalConditionDTO),HttpStatus.ACCEPTED);
+    public ResponseEntity<?> setUserInfo(@RequestBody MedicalConditionDTO medicalConditionDTO)throws WrongInput {
+        if (nutritionService.setCategory(medicalConditionDTO)){
+            return new ResponseEntity<>("Thank you",HttpStatus.ACCEPTED );
+        }else{
+            return new ResponseEntity<>("You already given information!",HttpStatus.BAD_REQUEST);}
     }
     @GetMapping("/user/recommendations")
-    public ResponseEntity<?> getRecommendation()throws FoodNotFound{
+    public ResponseEntity<?> getRecommendation()throws UserNotFound {
         return new ResponseEntity<>(nutritionService.categoryBasedRecommendation(),HttpStatus.ACCEPTED);
     }
 //include in feign client

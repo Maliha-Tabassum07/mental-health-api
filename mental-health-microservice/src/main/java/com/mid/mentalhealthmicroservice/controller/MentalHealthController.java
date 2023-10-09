@@ -23,7 +23,7 @@ public class MentalHealthController {
     }
 
     @PutMapping("exercise/update/{exerciseId}")
-    public ResponseEntity<?> updateExercise(@PathVariable Integer exerciseId,@RequestBody MentalExerciseDTO mentalExerciseDTO){
+    public ResponseEntity<?> updateExercise(@PathVariable Integer exerciseId,@RequestBody MentalExerciseDTO mentalExerciseDTO)throws ExerciseNotFound{
         return new ResponseEntity<>(mentalHealthService.updateMentalExercise(exerciseId,mentalExerciseDTO),HttpStatus.CREATED);
     }
 

@@ -1,6 +1,8 @@
 package com.mid.maliha.nutritionmicroservice.controller;
 
 import com.mid.maliha.nutritionmicroservice.exception.FoodNotFound;
+import com.mid.maliha.nutritionmicroservice.exception.UserNotFound;
+import com.mid.maliha.nutritionmicroservice.exception.WrongInput;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,13 +15,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleFoodNotFound(){
         return new ResponseEntity<>(new FoodNotFound().getMessage(), HttpStatus.BAD_REQUEST);
     }
-//    @ExceptionHandler({RuntimeException.class})
-//    public ResponseEntity<?> handleRuntimeException(){
-//        return new ResponseEntity<>(new CustomException("No exercise exists in this name").getMessage(), HttpStatus.BAD_REQUEST);
-//    }
-//    @ExceptionHandler({UserNotFound.class})
-//    public ResponseEntity<?> handleUserNotFound(){
-//        return new ResponseEntity<>(new UserNotFound().getMessage(), HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler({WrongInput.class})
+    public ResponseEntity<?> handleWrongInput(){
+        return new ResponseEntity<>(new WrongInput().getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler({UserNotFound.class})
+    public ResponseEntity<?> handleUserNotFound(){
+        return new ResponseEntity<>(new UserNotFound().getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
 }
